@@ -169,6 +169,7 @@ dom-module(id="crouton-connect-mqtt")
             that.connected = true;
             that.fire('makeToast', { message: "Connected to MQTT broker", duration: 3000, status: "check-circle" });
             that.fire('mqttConnection', { connected: that.connected, connecting: that.connecting });
+            that.subscribeAddress("/outbox/+/deviceInfo");
           });
           //on disconnect
           this.client.on('close', function(){
@@ -188,6 +189,8 @@ dom-module(id="crouton-connect-mqtt")
 
             //Waiting for device info to check if device is online
             if(box === "outbox" && address === "deviceInfo"){
+              document.getElementById("crouton-devices").addDevice(name);
+        setTimeout(function() {
               if(that.checkAutoConnect[name] || that.checkStatusAsync[name]){
                 if(that.checkStatusAsync[name]){
                   that.cancelAsync(that.checkStatusAsync[name]);//cancel timeout
@@ -209,6 +212,7 @@ dom-module(id="crouton-connect-mqtt")
                 that.fire('makeToast', { message: "Device <b>" + name + "</b> has been connected", duration: 3000, status: "check-circle" });
               }
               return;
+        }, 200);
             }
 
             //lwt - device has disconnected
@@ -255,8 +259,6 @@ dom-module(id="crouton-connect-mqtt")
           this.client.unsubscribe(address);
         },
         connectDevice: function(name,object){
-          this.subscribeAddress("/outbox/"+name+"/deviceInfo");
-          this.client.publish("/inbox/"+name+"/deviceInfo", "get");
           this.checkStatusAsync[name] = this.async(function(){
             object.connectionStatus = "not connected";
             this.fire('makeToast', { message: "Device <b>" + name + "</b> failed to connect", duration: 3000, status: "exclamation-circle" });
