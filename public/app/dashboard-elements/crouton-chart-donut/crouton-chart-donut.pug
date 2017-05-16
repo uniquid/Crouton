@@ -10,8 +10,9 @@ dom-module(id="crouton-chart-donut")
       div.expand
         div#chartDisplay
         div.textDisplay {{centerMessage}}
+        div.messageDisplay {{Message}}
         div.unitDisplay {{endPointJson.units}}
-        div.titleDisplay {{endPointJson.title}}
+        div.titleDisplay {{Title}}
 
   script.
     (function() {
@@ -72,6 +73,8 @@ dom-module(id="crouton-chart-donut")
               return a + b;
             });
           }
+          this.Message = this.endPointJson.values.message;
+          this.Title = this.getAttribute("device-name");
           if(this.chart){
             this.chart.update({
               labels: this.endPointJson.values.labels,
